@@ -1,0 +1,17 @@
+{
+  "name": "pet-care-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Distributed pet care platform with microservices architecture",
+  "workspaces": [
+    "frontend",
+    "services/medical-ledger",
+    "services/event-gateway"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:medical": "npm run dev --workspace=services/medical-ledger",
+    "dev:nutrition": "cd services/nutrition && uvicorn main:app --reload --port 8000",
+    "dev:all": "echo 'Start services individually in separate terminals'"
+  }
+}

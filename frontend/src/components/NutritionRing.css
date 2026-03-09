@@ -1,0 +1,79 @@
+.nutrition-ring {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-6);
+}
+
+.nutrition-ring__svg {
+    filter: drop-shadow(0 4px 12px rgba(70, 130, 180, 0.1));
+}
+
+.nutrition-ring__arc {
+    transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: ringReveal 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: var(--delay, 0s);
+}
+
+@keyframes ringReveal {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.nutrition-ring__calories-value {
+    font-family: var(--font-family);
+    font-size: 1.75rem;
+    font-weight: 700;
+    fill: var(--color-text);
+}
+
+.nutrition-ring__calories-label {
+    font-family: var(--font-family);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    fill: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.nutrition-ring__legend {
+    display: flex;
+    gap: var(--space-6);
+}
+
+.nutrition-ring__legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.nutrition-ring__legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+}
+
+.nutrition-ring__legend-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.nutrition-ring__legend-value {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+@media (max-width: 480px) {
+    .nutrition-ring__legend {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+}

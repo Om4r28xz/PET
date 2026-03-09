@@ -1,0 +1,54 @@
+.pulse-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-light);
+    color: var(--color-text-muted);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.pulse-icon:hover {
+    background: var(--color-surface-alt);
+    color: var(--color-text);
+}
+
+.pulse-icon--active {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    animation: ringPulse 2s ease-in-out infinite;
+}
+
+.pulse-icon__dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background: var(--color-danger);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.pulse-icon__count {
+    position: absolute;
+    top: 4px;
+    right: 2px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: var(--radius-full);
+    background: var(--color-danger);
+    color: #fff;
+    font-size: 0.625rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
