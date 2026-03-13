@@ -181,26 +181,43 @@ app.delete('/api/medical/visits/:id', async (req, res) => {
 });
 
 // ════════════════════════════════════════
-// EVENT PUBLISHING (to Supabase/Event Gateway)
+// EVENT PUBLISHING (via Supabase Realtime Broadcast)
 // ════════════════════════════════════════
 
 async function publishEvent(type: string, payload: Record<string, unknown>) {
     try {
-        const eventGatewayUrl = process.env.EVENT_GATEWAY_URL || 'http://localhost:3002';
-        await fetch(`${eventGatewayUrl}/api/events/publish`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type, payload, timestamp: new Date().toISOString() }),
+        const channel = supabase.channel('pet-events');
+        await new Promise<void>((resolve) => {
+            channel.subscribe((status: string) => {
+                if (status === 'SUBSCRIBED') {
+                    channel.send({
+                        type: 'broadcast',
+                        event: 'new_event',
+                        payload: {
+                            id: `evt-${Date.now()}`,
+                            type,
+                            title: type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+                            message: JSON.stringify(payload),
+                            timestamp: new Date().toISOString(),
+                            ...payload,
+                        },
+                    }).then(() => resolve());
+                }
+            });
         });
+        supabase.removeChannel(channel);
     } catch {
-        // Event gateway may be offline — non-critical, log and continue
-        console.log(`[Event Gateway] Failed to publish event: ${type}`);
+        console.log(`[Event Gateway] Failed to broadcast event: ${type}`);
     }
 }
 
-// ── Start Server ──
+// ── Export app for Vercel serverless ──
+export default app;
 
-app.listen(PORT, () => {
-    console.log(`🏥 Medical Ledger Service running on http://localhost:${PORT}`);
-    console.log(`   Database: Supabase (PostgreSQL)`);
-});
+// ── Start Server (local dev only) ──
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`🏥 Medical Ledger Service running on http://localhost:${PORT}`);
+        console.log(`   Database: Supabase (PostgreSQL)`);
+    });
+}

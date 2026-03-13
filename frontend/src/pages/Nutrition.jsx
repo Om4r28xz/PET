@@ -2,6 +2,7 @@ import { useState } from 'react'
 import NutritionRing from '../components/NutritionRing'
 import { useToast } from '../hooks/useToast'
 import { publishEvent } from '../hooks/useEvents'
+import { API } from '../lib/api'
 import './Nutrition.css'
 
 const ACTIVITY_LEVELS = ['low', 'moderate', 'high']
@@ -19,7 +20,7 @@ export default function Nutrition() {
     async function handleCalculate() {
         setCalculating(true)
         try {
-            const res = await fetch('/api/nutrition/calculate', {
+            const res = await fetch(`${API.nutrition}/api/nutrition/calculate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

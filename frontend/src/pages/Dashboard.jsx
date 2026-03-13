@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import PulseIcon from '../components/PulseIcon'
 import { useEvents } from '../hooks/useEvents'
+import { API } from '../lib/api'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -33,12 +34,12 @@ export default function Dashboard() {
         async function fetchDashboardData() {
             try {
                 const [nutritionRes, vaccineRes] = await Promise.allSettled([
-                    fetch('/api/nutrition/calculate', {
+                    fetch(`${API.nutrition}/api/nutrition/calculate`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ weight_kg: 15, age_months: 8, activity_level: 'moderate', diet_mode: 'kibble' }),
                     }).then(r => r.json()),
-                    fetch('/api/medical/vaccines/next').then(r => r.json()),
+                    fetch(`${API.medical}/api/medical/vaccines/next`).then(r => r.json()),
                 ])
 
                 if (nutritionRes.status === 'fulfilled') setNutritionStatus(nutritionRes.value)

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useToast } from '../hooks/useToast'
 import { useEvents, publishEvent } from '../hooks/useEvents'
+import { API } from '../lib/api'
 import './Medical.css'
 
 const TABS = [
@@ -26,7 +27,7 @@ export default function Medical() {
 
     const fetchRecords = useCallback(async (tab) => {
         try {
-            const res = await fetch(`/api/medical/${tab}`)
+            const res = await fetch(`${API.medical}/api/medical/${tab}`)
             if (res.ok) {
                 const data = await res.json()
                 setRecords((prev) => ({ ...prev, [tab]: data }))
@@ -69,7 +70,7 @@ export default function Medical() {
         addToast('Record saved — syncing with distributed network…', 'success')
 
         try {
-            const res = await fetch(`/api/medical/${activeTab}`, {
+            const res = await fetch(`${API.medical}/api/medical/${activeTab}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -121,7 +122,7 @@ export default function Medical() {
         addToast('Record removed', 'info')
 
         try {
-            const res = await fetch(`/api/medical/${activeTab}/${id}`, {
+            const res = await fetch(`${API.medical}/api/medical/${activeTab}/${id}`, {
                 method: 'DELETE',
             })
             if (!res.ok) throw new Error()
