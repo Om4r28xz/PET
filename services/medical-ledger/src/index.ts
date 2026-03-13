@@ -30,11 +30,11 @@ app.get('/api/medical/health', (_req, res) => {
 // VACCINES
 // ════════════════════════════════════════
 
-app.get('/api/medical/vaccines', async (_req, res) => {
-    const { data, error } = await supabase
-        .from('vaccines')
-        .select('*')
-        .order('date', { ascending: false });
+app.get('/api/medical/vaccines', async (req, res) => {
+    const userId = req.query.user_id as string;
+    let query = supabase.from('vaccines').select('*').order('date', { ascending: false });
+    if (userId) query = query.eq('user_id', userId);
+    const { data, error } = await query;
 
     if (error) return res.status(500).json({ error: error.message });
     res.json(data);
@@ -55,14 +55,14 @@ app.get('/api/medical/vaccines/next', async (_req, res) => {
 });
 
 app.post('/api/medical/vaccines', async (req, res) => {
-    const { name, date, veterinarian = '', notes = '' } = req.body;
+    const { name, date, veterinarian = '', notes = '', user_id = null } = req.body;
     if (!name || !date) {
         return res.status(400).json({ error: 'name and date are required' });
     }
 
     const { data, error } = await supabase
         .from('vaccines')
-        .insert({ name, date, veterinarian, notes })
+        .insert({ name, date, veterinarian, notes, user_id })
         .select()
         .single();
 
@@ -92,25 +92,25 @@ app.delete('/api/medical/vaccines/:id', async (req, res) => {
 // DEWORMING
 // ════════════════════════════════════════
 
-app.get('/api/medical/deworming', async (_req, res) => {
-    const { data, error } = await supabase
-        .from('deworming')
-        .select('*')
-        .order('date', { ascending: false });
+app.get('/api/medical/deworming', async (req, res) => {
+    const userId = req.query.user_id as string;
+    let query = supabase.from('deworming').select('*').order('date', { ascending: false });
+    if (userId) query = query.eq('user_id', userId);
+    const { data, error } = await query;
 
     if (error) return res.status(500).json({ error: error.message });
     res.json(data);
 });
 
 app.post('/api/medical/deworming', async (req, res) => {
-    const { product, date, weight_at_time = '', next_due = '' } = req.body;
+    const { product, date, weight_at_time = '', next_due = '', user_id = null } = req.body;
     if (!product || !date) {
         return res.status(400).json({ error: 'product and date are required' });
     }
 
     const { data, error } = await supabase
         .from('deworming')
-        .insert({ product, date, weight_at_time, next_due: next_due || null })
+        .insert({ product, date, weight_at_time, next_due: next_due || null, user_id })
         .select()
         .single();
 
@@ -138,25 +138,25 @@ app.delete('/api/medical/deworming/:id', async (req, res) => {
 // VET VISITS
 // ════════════════════════════════════════
 
-app.get('/api/medical/visits', async (_req, res) => {
-    const { data, error } = await supabase
-        .from('vet_visits')
-        .select('*')
-        .order('date', { ascending: false });
+app.get('/api/medical/visits', async (req, res) => {
+    const userId = req.query.user_id as string;
+    let query = supabase.from('vet_visits').select('*').order('date', { ascending: false });
+    if (userId) query = query.eq('user_id', userId);
+    const { data, error } = await query;
 
     if (error) return res.status(500).json({ error: error.message });
     res.json(data);
 });
 
 app.post('/api/medical/visits', async (req, res) => {
-    const { reason, date, veterinarian = '', diagnosis = '', notes = '' } = req.body;
+    const { reason, date, veterinarian = '', diagnosis = '', notes = '', user_id = null } = req.body;
     if (!reason || !date) {
         return res.status(400).json({ error: 'reason and date are required' });
     }
 
     const { data, error } = await supabase
         .from('vet_visits')
-        .insert({ reason, date, veterinarian, diagnosis, notes })
+        .insert({ reason, date, veterinarian, diagnosis, notes, user_id })
         .select()
         .single();
 

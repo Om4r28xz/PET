@@ -1,0 +1,116 @@
+.login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+    padding: var(--space-md);
+}
+
+.login__card {
+    width: 100%;
+    max-width: 420px;
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.login__logo {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+}
+
+.login__logo-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: var(--space-xs);
+}
+
+.login__logo h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.login__logo p {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin: var(--space-xxs) 0 0;
+}
+
+.login__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.login__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xxs);
+}
+
+.login__field label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.login__error {
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.login__submit {
+    margin-top: var(--space-xs);
+}
+
+.login__toggle {
+    text-align: center;
+    margin-top: var(--space-md);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.login__toggle button {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-left: var(--space-xxs);
+    font-size: inherit;
+}
+
+.login__toggle button:hover {
+    text-decoration: underline;
+}
+
+.login__spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin-right: var(--space-xs);
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

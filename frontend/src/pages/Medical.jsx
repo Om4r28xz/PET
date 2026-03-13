@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useToast } from '../hooks/useToast'
 import { useEvents, publishEvent } from '../hooks/useEvents'
+import { useAuth } from '../hooks/useAuth'
 import { API } from '../lib/api'
 import './Medical.css'
 
@@ -19,6 +20,7 @@ const FORM_DEFAULTS = {
 export default function Medical() {
     const { addToast } = useToast()
     const { addEvent } = useEvents()
+    const { user } = useAuth()
     const [activeTab, setActiveTab] = useState('vaccines')
     const [records, setRecords] = useState({ vaccines: [], deworming: [], visits: [] })
     const [showForm, setShowForm] = useState(false)
@@ -27,7 +29,7 @@ export default function Medical() {
 
     const fetchRecords = useCallback(async (tab) => {
         try {
-            const res = await fetch(`${API.medical}/api/medical/${tab}`)
+            const res = await fetch(`${API.medical}/api/medical/${tab}?user_id=${user?.id || ''}`)
             if (res.ok) {
                 const data = await res.json()
                 setRecords((prev) => ({ ...prev, [tab]: data }))
@@ -73,7 +75,7 @@ export default function Medical() {
             const res = await fetch(`${API.medical}/api/medical/${activeTab}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ ...formData, user_id: user?.id }),
             })
 
             if (res.ok) {
