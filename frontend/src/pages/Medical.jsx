@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useToast } from '../hooks/useToast'
-import { useEvents } from '../hooks/useEvents'
+import { useEvents, publishEvent } from '../hooks/useEvents'
 import './Medical.css'
 
 const TABS = [
@@ -90,6 +90,12 @@ export default function Medical() {
                     title: 'Record Saved',
                     message: `New ${activeTab.slice(0, -1)} added to health passport`,
                     timestamp: new Date().toISOString(),
+                })
+                // Broadcast to Event Gateway (Supabase Edge Function)
+                publishEvent(`${activeTab.slice(0, -1)}_created`, {
+                    title: 'Record Saved',
+                    message: `New ${activeTab.slice(0, -1)} added to health passport`,
+                    ...saved,
                 })
                 addToast('Data synchronized across the distributed network', 'info')
             }

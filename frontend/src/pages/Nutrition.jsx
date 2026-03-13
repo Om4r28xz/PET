@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import NutritionRing from '../components/NutritionRing'
 import { useToast } from '../hooks/useToast'
+import { publishEvent } from '../hooks/useEvents'
 import './Nutrition.css'
 
 const ACTIVITY_LEVELS = ['low', 'moderate', 'high']
@@ -31,6 +32,13 @@ export default function Nutrition() {
             const data = await res.json()
             setResult(data)
             addToast('Nutrition calculated successfully!', 'success')
+            // Broadcast to Event Gateway
+            publishEvent('nutrition_calculated', {
+                title: 'Nutrition Calculated',
+                message: `${data.calories} kcal recommended (${dietMode} mode)`,
+                calories: data.calories,
+                diet_mode: dietMode,
+            })
         } catch {
             addToast('Failed to connect to Nutrition service', 'error')
         } finally {
