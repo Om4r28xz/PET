@@ -105,10 +105,13 @@ export default function Medical() {
                     timestamp: new Date().toISOString(),
                 })
                 // Broadcast to Event Gateway (Supabase Edge Function)
-                publishEvent(`${activeTab.slice(0, -1)}_created`, {
-                    title: 'Record Saved',
-                    message: `New ${activeTab.slice(0, -1)} added to health passport`,
-                    ...saved,
+                let evtType = 'Vacuna registrada'
+                if (activeTab === 'deworming') evtType = 'Desparasitación registrada'
+                if (activeTab === 'visits') evtType = 'Visita veterinaria registrada'
+
+                publishEvent(`${activeTab}_created`, {
+                    title: evtType,
+                    message: `Se ha guardado tu registro exitosamente.`,
                 })
                 addToast('Data synchronized across the distributed network', 'info')
             } else {

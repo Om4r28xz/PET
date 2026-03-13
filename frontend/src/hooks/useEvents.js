@@ -30,16 +30,7 @@ export function useEvents() {
     useEffect(() => {
         // ── If Supabase is not configured, fall back to simulated event ──
         if (!supabase) {
-            const timer = setTimeout(() => {
-                addEvent({
-                    id: 'welcome-1',
-                    type: 'info',
-                    title: 'System Connected (Local)',
-                    message: 'Event gateway running in local simulation mode',
-                    timestamp: new Date().toISOString(),
-                })
-            }, 1500)
-            return () => clearTimeout(timer)
+            return
         }
 
         // ── Subscribe to Broadcast channel ──
@@ -57,15 +48,7 @@ export function useEvents() {
                 }
             })
             .subscribe((status) => {
-                if (status === 'SUBSCRIBED') {
-                    addEvent({
-                        id: 'realtime-connected',
-                        type: 'info',
-                        title: 'System Connected',
-                        message: 'Real-time event gateway is active',
-                        timestamp: new Date().toISOString(),
-                    })
-                }
+                // Subscribe silently without adding a feed notification
             })
 
         channelRef.current = channel

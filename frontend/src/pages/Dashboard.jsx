@@ -4,13 +4,25 @@ import { useEvents } from '../hooks/useEvents'
 import { API } from '../lib/api'
 import './Dashboard.css'
 
+const DAILY_TIPS = [
+    "Recuerda mantener siempre agua fresca y limpia al alcance de tu mascota.",
+    "Un paseo diario de 30 minutos es ideal para la salud física y mental.",
+    "La estimulación mental con juguetes es tan importante como el ejercicio.",
+    "Un cepillado regular ayuda a mantener su pelaje sano y reduce la caída.",
+    "Revisa sus orejas semanalmente para prevenir posibles infecciones.",
+    "Mantener el peso ideal de tu mascota es clave para una vida larga y saludable."
+]
+
 export default function Dashboard() {
     const { events, hasNewEvent, clearNewFlag } = useEvents()
-    const [nutritionStatus, setNutritionStatus] = useState(null)
     const [nextVaccine, setNextVaccine] = useState(null)
-    const [loading, setLoading] = useState(true)
+    const [tipIndex, setTipIndex] = useState(0)
     const [showNotifPanel, setShowNotifPanel] = useState(false)
     const notifRef = useRef(null)
+
+    useEffect(() => {
+        setTipIndex(Math.floor(Math.random() * DAILY_TIPS.length))
+    }, [])
 
     // Close panel on click outside
     useEffect(() => {
@@ -33,27 +45,14 @@ export default function Dashboard() {
     useEffect(() => {
         async function fetchDashboardData() {
             try {
-                const [nutritionRes, vaccineRes] = await Promise.allSettled([
-                    fetch(`${API.nutrition}/api/nutrition/calculate`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ weight_kg: 15, age_months: 8, activity_level: 'moderate', diet_mode: 'kibble' }),
-                    }).then(r => r.json()),
-                    fetch(`${API.medical}/api/medical/vaccines/next`).then(r => r.json()),
-                ])
-
-                if (nutritionRes.status === 'fulfilled') setNutritionStatus(nutritionRes.value)
-                if (vaccineRes.status === 'fulfilled') setNextVaccine(vaccineRes.value)
+                const vaccineRes = await fetch(`${API.medical}/api/medical/vaccines/next`).then(r => r.json())
+                if (vaccineRes) setNextVaccine(vaccineRes)
             } catch (err) {
-                // Services may be offline during dev — show fallback
-            } finally {
-                setLoading(false)
+                // Services may be offline during dev
             }
         }
         fetchDashboardData()
     }, [])
-
-    const isOnTrack = nutritionStatus?.status === 'calculated'
 
     return (
         <div className="dashboard animate-fade-in">
@@ -106,31 +105,22 @@ export default function Dashboard() {
             {/* Daily Status Card */}
             <section className="dashboard__status-card card card--elevated" aria-label="Daily status">
                 <div className="dashboard__status-indicator">
-                    <div className={`dashboard__status-orb ${isOnTrack ? 'dashboard__status-orb--on-track' : 'dashboard__status-orb--pending'}`}>
-                        {isOnTrack ? (
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                        ) : (
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="12" cy="12" r="10" />
-                                <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                        )}
+                    <div className="dashboard__status-orb dashboard__status-orb--on-track">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" />
+                            <line x1="16" y1="8" x2="2" y2="22" />
+                            <line x1="17.5" y1="15" x2="9" y2="6.5" />
+                        </svg>
                     </div>
                     <div className="dashboard__status-info">
-                        <span className={`badge ${isOnTrack ? 'badge--success' : 'badge--info'}`}>
-                            {isOnTrack ? 'On Track' : loading ? 'Loading...' : 'Awaiting Data'}
+                        <span className="badge badge--success">
+                            Tip del Día
                         </span>
                         <h2 className="dashboard__status-heading">
-                            {isOnTrack
-                                ? 'Your puppy is on track today!'
-                                : 'Set up your puppy\'s nutrition profile'}
+                            Salud y Bienestar
                         </h2>
                         <p className="dashboard__status-desc">
-                            {isOnTrack
-                                ? `Recommended ${nutritionStatus.calories} kcal with a balanced ${nutritionStatus.growth_phase} diet`
-                                : 'Navigate to Nutrition to calculate the ideal meal plan'}
+                            {DAILY_TIPS[tipIndex]}
                         </p>
                     </div>
                 </div>
