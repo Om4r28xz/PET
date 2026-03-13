@@ -7,6 +7,7 @@ import Medical from './pages/Medical'
 import Login from './pages/Login'
 import { ToastProvider } from './hooks/useToast.jsx'
 import { AuthProvider, useAuth } from './hooks/useAuth'
+import { EventsProvider } from './hooks/useEvents'
 import './App.css'
 
 function AppContent() {
@@ -44,9 +45,11 @@ function AppContent() {
 export default function App() {
     return (
         <AuthProvider>
-            <ToastProvider>
-                <AppContent />
-            </ToastProvider>
+            <EventsProvider>
+                <ToastProvider>
+                    <AppContent />
+                </ToastProvider>
+            </EventsProvider>
         </AuthProvider>
     )
 }

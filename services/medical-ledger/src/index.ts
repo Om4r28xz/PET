@@ -193,28 +193,28 @@ app.delete('/api/medical/visits/:id', async (req, res) => {
 
 async function publishEvent(type: string, payload: Record<string, unknown>) {
     try {
-        const channel = supabase.channel('pet-events');
-        await new Promise<void>((resolve) => {
-            channel.subscribe((status: string) => {
-                if (status === 'SUBSCRIBED') {
-                    channel.send({
-                        type: 'broadcast',
-                        event: 'new_event',
-                        payload: {
-                            id: `evt-${Date.now()}`,
-                            type,
-                            title: typeof payload.title === 'string' ? payload.title : type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-                            message: typeof payload.message === 'string' ? payload.message : JSON.stringify(payload),
-                            timestamp: new Date().toISOString(),
-                            ...payload,
-                        },
-                    }).then(() => resolve());
+        const eventGatewayUrl = process.env.EVENT_GATEWAY_URL || 'http://localhost:3002';
+        const response = await fetch(`${eventGatewayUrl}/api/events/publish`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type,
+                payload: {
+                    title: typeof payload.title === 'string' ? payload.title : type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+                    message: typeof payload.message === 'string' ? payload.message : JSON.stringify(payload),
+                    timestamp: new Date().toISOString(),
+                    ...payload,
                 }
-            });
+            }),
         });
-        supabase.removeChannel(channel);
-    } catch {
-        console.log(`[Event Gateway] Failed to broadcast event: ${type}`);
+        
+        if (!response.ok) {
+            console.error(`[Event Gateway] Failed to broadcast event HTTP status: ${response.status}`);
+        }
+    } catch (err) {
+        console.error(`[Event Gateway] Failed to broadcast event: ${type}`, err);
     }
 }
 
