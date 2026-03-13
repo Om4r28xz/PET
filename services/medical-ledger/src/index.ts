@@ -68,9 +68,6 @@ app.post('/api/medical/vaccines', async (req, res) => {
 
     if (error) return res.status(500).json({ error: error.message });
 
-    // Fire-and-forget event to Event Gateway
-    publishEvent('vaccine_created', { id: data.id, name, date });
-
     res.status(201).json(data);
 });
 
@@ -84,7 +81,11 @@ app.delete('/api/medical/vaccines/:id', async (req, res) => {
     if (error) return res.status(500).json({ error: error.message });
     if (count === 0) return res.status(404).json({ error: 'Not found' });
 
-    publishEvent('vaccine_deleted', { id });
+    const time = new Date().toLocaleTimeString('es-ES', { hour: 'numeric', minute: '2-digit', hour12: true });
+    publishEvent('vaccine_deleted', {
+        title: 'Vacuna eliminada',
+        message: `Se borró el registro de la vacuna a las ${time}`
+    });
     res.json({ deleted: true });
 });
 
@@ -116,7 +117,6 @@ app.post('/api/medical/deworming', async (req, res) => {
 
     if (error) return res.status(500).json({ error: error.message });
 
-    publishEvent('deworming_created', { id: data.id, product, date });
     res.status(201).json(data);
 });
 
@@ -130,7 +130,11 @@ app.delete('/api/medical/deworming/:id', async (req, res) => {
     if (error) return res.status(500).json({ error: error.message });
     if (count === 0) return res.status(404).json({ error: 'Not found' });
 
-    publishEvent('deworming_deleted', { id });
+    const time = new Date().toLocaleTimeString('es-ES', { hour: 'numeric', minute: '2-digit', hour12: true });
+    publishEvent('deworming_deleted', {
+        title: 'Desparasitación eliminada',
+        message: `Se borró el registro de desparasitación a las ${time}`
+    });
     res.json({ deleted: true });
 });
 
@@ -162,7 +166,6 @@ app.post('/api/medical/visits', async (req, res) => {
 
     if (error) return res.status(500).json({ error: error.message });
 
-    publishEvent('visit_created', { id: data.id, reason, date });
     res.status(201).json(data);
 });
 
@@ -176,7 +179,11 @@ app.delete('/api/medical/visits/:id', async (req, res) => {
     if (error) return res.status(500).json({ error: error.message });
     if (count === 0) return res.status(404).json({ error: 'Not found' });
 
-    publishEvent('visit_deleted', { id });
+    const time = new Date().toLocaleTimeString('es-ES', { hour: 'numeric', minute: '2-digit', hour12: true });
+    publishEvent('visit_deleted', {
+        title: 'Visita eliminada',
+        message: `Se borró el registro de visita veterinaria a las ${time}`
+    });
     res.json({ deleted: true });
 });
 
@@ -196,8 +203,8 @@ async function publishEvent(type: string, payload: Record<string, unknown>) {
                         payload: {
                             id: `evt-${Date.now()}`,
                             type,
-                            title: type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-                            message: JSON.stringify(payload),
+                            title: typeof payload.title === 'string' ? payload.title : type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+                            message: typeof payload.message === 'string' ? payload.message : JSON.stringify(payload),
                             timestamp: new Date().toISOString(),
                             ...payload,
                         },

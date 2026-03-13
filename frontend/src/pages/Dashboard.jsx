@@ -22,6 +22,13 @@ export default function Dashboard() {
 
     useEffect(() => {
         setTipIndex(Math.floor(Math.random() * DAILY_TIPS.length))
+
+        // Rotate tip every 5 minutes
+        const interval = setInterval(() => {
+            setTipIndex((prev) => (prev + 1) % DAILY_TIPS.length)
+        }, 5 * 60 * 1000)
+
+        return () => clearInterval(interval)
     }, [])
 
     // Close panel on click outside
