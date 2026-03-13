@@ -54,6 +54,16 @@ export default function Medical() {
     }
 
     async function handleSave() {
+        let isFormValid = false
+        if (activeTab === 'vaccines') isFormValid = formData.name && formData.date
+        else if (activeTab === 'deworming') isFormValid = formData.product && formData.date
+        else if (activeTab === 'visits') isFormValid = formData.reason && formData.date
+
+        if (!isFormValid) {
+            addToast('Please fill in all required fields (Name/Reason and Date)', 'error')
+            return
+        }
+
         setSaving(true)
 
         // Optimistic update
@@ -101,14 +111,18 @@ export default function Medical() {
                     ...saved,
                 })
                 addToast('Data synchronized across the distributed network', 'info')
+            } else {
+                // Determine backend error
+                const errorData = await res.json().catch(() => ({}))
+                throw new Error(errorData.error || 'Failed to save record')
             }
-        } catch {
+        } catch (err) {
             // Remove optimistic record on failure
             setRecords((prev) => ({
                 ...prev,
                 [activeTab]: prev[activeTab].filter((r) => r.id !== optimisticRecord.id),
             }))
-            addToast('Failed to save — please try again', 'error')
+            addToast(err.message || 'Failed to save — please try again', 'error')
         } finally {
             setSaving(false)
         }
